@@ -32,15 +32,6 @@ public class Operation {
     @JsonIgnore
     private long accountId;
 
-    public Operation() {
-    }
-
-    public Operation(OperationType operationType, BigDecimal amount, long accountId) {
-        this.operationType = operationType;
-        this.amount = amount;
-        this.accountId = accountId;
-    }
-
     public long getOperationId() {
         return operationId;
     }

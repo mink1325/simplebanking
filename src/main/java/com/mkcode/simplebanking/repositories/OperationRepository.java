@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OperationRepository extends CrudRepository<Operation, Long> {
@@ -15,5 +16,5 @@ public interface OperationRepository extends CrudRepository<Operation, Long> {
     List<Operation> findAllByAccountId(long accountId);
 
     @Query("SELECT SUM(o.amount) FROM Operation o WHERE o.accountId = :accountId")
-    BigDecimal getAccountBalance(@Param("accountId") long accountId);
+    Optional<BigDecimal> getAccountBalance(@Param("accountId") long accountId);
 }

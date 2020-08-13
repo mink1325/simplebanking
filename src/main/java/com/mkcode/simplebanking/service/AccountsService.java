@@ -2,56 +2,51 @@ package com.mkcode.simplebanking.service;
 
 import com.mkcode.simplebanking.model.Account;
 import com.mkcode.simplebanking.model.Operation;
-import com.mkcode.simplebanking.model.User;
 import com.mkcode.simplebanking.repositories.AccountRepository;
 import com.mkcode.simplebanking.repositories.OperationRepository;
-import com.mkcode.simplebanking.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.math.BigDecimal.ZERO;
 
 @Service
 public class AccountsService {
 
     private final AccountRepository accountRepository;
     private final OperationRepository operationRepository;
-    private final UserRepository userRepository;
 
     public AccountsService(AccountRepository repository,
-                           OperationRepository operationRepository,
-                           UserRepository userRepository) {
+                           OperationRepository operationRepository) {
         this.accountRepository = repository;
         this.operationRepository = operationRepository;
-        this.userRepository = userRepository;
     }
 
-    public List<Account> getUserAccounts(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException(format("User '%s' does not exists", username)));
-        return accountRepository.findAllByUserId(user.getUserId());
+    public List<Account> getUserAccounts(long userId) {
+        return accountRepository.findAllByUserId(userId);
     }
 
-    public Account getAccount(String accountNo) {
-        return accountRepository.findByAccountNo(accountNo)
+    public Account getUserAccount(long userId, String accountNo) {
+        return accountRepository.findByUserIdAndAccountNo(userId, accountNo)
                 .orElseThrow(() -> new IllegalArgumentException(format("Account with no %s does not exists", accountNo)));
     }
 
-    public BigDecimal getAccountBalance(String accountNo) {
-        Account account = getAccount(accountNo);
-        return operationRepository.getAccountBalance(account.getAccountId());
+    public BigDecimal getAccountBalance(long userId, String accountNo) {
+        return operationRepository.getAccountBalance(getUserAccountId(userId, accountNo)).orElse(ZERO);
     }
 
-    public List<Operation> getAccountOperations(String accountNo) {
-        Account account = getAccount(accountNo);
-        return operationRepository.findAllByAccountId(account.getAccountId());
+    public List<Operation> getAccountOperations(long userId, String accountNo) {
+        return operationRepository.findAllByAccountId(getUserAccountId(userId, accountNo));
     }
 
-    public Operation postOperation(String accountNo, Operation operation) {
-        Account account = getAccount(accountNo);
-        operation.setAccountId(account.getAccountId());
+    public Operation postOperation(long userId, String accountNo, Operation operation) {
+        operation.setAccountId(getUserAccountId(userId, accountNo));
         return operationRepository.save(operation);
+    }
+
+    private long getUserAccountId(long userId, String accountNo) {
+        return getUserAccount(userId, accountNo).getAccountId();
     }
 }

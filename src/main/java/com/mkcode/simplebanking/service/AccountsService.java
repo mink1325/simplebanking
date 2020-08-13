@@ -30,7 +30,7 @@ public class AccountsService {
 
     public Account getUserAccount(long userId, String accountNo) {
         return accountRepository.findByUserIdAndAccountNo(userId, accountNo)
-                .orElseThrow(() -> new IllegalArgumentException(format("Account with no %s does not exists", accountNo)));
+                .orElseThrow(() -> new AccountNoNotFoundException(accountNo));
     }
 
     public BigDecimal getAccountBalance(long userId, String accountNo) {

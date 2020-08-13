@@ -3,9 +3,13 @@ package com.mkcode.simplebanking.rest;
 
 import com.mkcode.simplebanking.model.Account;
 import com.mkcode.simplebanking.model.Operation;
+import com.mkcode.simplebanking.service.AccountNoNotFoundException;
 import com.mkcode.simplebanking.service.AccountsService;
 import com.mkcode.simplebanking.service.UsersService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,5 +60,10 @@ public class SimpleBankController {
 
     private long getUserId(Principal principal) {
         return usersService.getUserId(principal.getName());
+    }
+
+    @ExceptionHandler({ AccountNoNotFoundException.class, UsernameNotFoundException.class})
+    public ResponseEntity<String> handleException(RuntimeException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }

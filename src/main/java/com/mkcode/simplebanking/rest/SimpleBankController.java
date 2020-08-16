@@ -5,10 +5,12 @@ import com.mkcode.simplebanking.model.Account;
 import com.mkcode.simplebanking.model.Operation;
 import com.mkcode.simplebanking.service.AccountNoNotFoundException;
 import com.mkcode.simplebanking.service.AccountsService;
+import com.mkcode.simplebanking.service.OperationValidationException;
 import com.mkcode.simplebanking.service.UsersService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
+@Validated
 @RestController("/")
 public class SimpleBankController {
 
@@ -53,7 +57,7 @@ public class SimpleBankController {
     @PostMapping(path = "/accounts/{accountNo}/operations")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Operation postAccountOperation(@PathVariable("accountNo") String accountNo,
-                                          @RequestBody Operation operation,
+                                          @Valid @RequestBody Operation operation,
                                           Principal principal) {
         return accountsService.postOperation(getUserId(principal), accountNo, operation);
     }
@@ -62,7 +66,7 @@ public class SimpleBankController {
         return usersService.getUserId(principal.getName());
     }
 
-    @ExceptionHandler({ AccountNoNotFoundException.class, UsernameNotFoundException.class})
+    @ExceptionHandler({AccountNoNotFoundException.class, UsernameNotFoundException.class, OperationValidationException.class})
     public ResponseEntity<String> handleException(RuntimeException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }

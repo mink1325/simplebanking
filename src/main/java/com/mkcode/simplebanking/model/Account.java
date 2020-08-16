@@ -25,7 +25,23 @@ public class Account {
         return accountId;
     }
 
+    public void setAccountId(long accountId) {
+        this.accountId = accountId;
+    }
+
     public String getAccountNo() {
         return accountNo;
+    }
+
+    public void setAccountNo(String accountNo) {
+        this.accountNo = accountNo;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }

@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -23,9 +24,12 @@ public class Operation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private long operationId;
+    @NotNull
     @Enumerated(EnumType.ORDINAL)
     private OperationType operationType;
+    @NotNull
     private BigDecimal amount;
+    @JsonIgnore
     @CreatedDate
     private Instant dateCreated;
 
@@ -36,12 +40,32 @@ public class Operation {
         return operationId;
     }
 
+    public void setOperationId(long operationId) {
+        this.operationId = operationId;
+    }
+
     public OperationType getOperationType() {
         return operationType;
     }
 
+    public void setOperationType(OperationType operationType) {
+        this.operationType = operationType;
+    }
+
     public BigDecimal getAmount() {
         return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public Instant getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Instant dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public long getAccountId() {

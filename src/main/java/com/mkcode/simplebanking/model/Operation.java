@@ -24,10 +24,10 @@ public class Operation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private long operationId;
-    @NotNull
+    @NotNull(message = "OperationType must not be null")
     @Enumerated(EnumType.ORDINAL)
     private OperationType operationType;
-    @NotNull
+    @NotNull(message = "Amount must not be null")
     private BigDecimal amount;
     @JsonIgnore
     @CreatedDate

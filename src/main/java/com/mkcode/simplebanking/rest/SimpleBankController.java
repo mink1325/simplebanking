@@ -10,7 +10,9 @@ import com.mkcode.simplebanking.service.UsersService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,8 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Validated
 @RestController("/")
@@ -68,6 +72,20 @@ public class SimpleBankController {
 
     @ExceptionHandler({AccountNoNotFoundException.class, UsernameNotFoundException.class, OperationValidationException.class})
     public ResponseEntity<String> handleException(RuntimeException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<List<String>> handleException(MethodArgumentNotValidException exception) {
+        List<String> errorDetails = exception.getBindingResult().getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
+                .collect(toList());
+
+        return ResponseEntity.badRequest().body(errorDetails);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }
